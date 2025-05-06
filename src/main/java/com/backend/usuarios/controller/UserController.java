@@ -7,6 +7,7 @@ import com.backend.usuarios.util.JwtUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -65,15 +66,16 @@ public class UserController {
                    .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Eliminar usuario
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        boolean deleted = userService.deleteUser(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+@PreAuthorize("hasRole('ADMIN')") // Solo si quieres que solo admins puedan eliminar
+public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    boolean deleted = userService.deleteUser(id);
+    if (deleted) {
+        return ResponseEntity.noContent().build();
+    } else {
+        return ResponseEntity.notFound().build();
     }
+}
+
 }
 
